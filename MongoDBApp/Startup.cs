@@ -10,6 +10,8 @@ using Microsoft.Extensions.Logging;
 using DataAccess.DbModels;
 using DataAccess.Repository;
 using DataAccess.Repository.Base;
+using Services.BusinessLogic.Base;
+using Services.BusinessLogic;
 
 namespace MongoDBApp
 {
@@ -35,6 +37,8 @@ namespace MongoDBApp
             services.Configure<Settings>(o => { o.iConfigurationRoot = Configuration; });
             services.AddTransient<IPolicyRepository, PolicyRepository>();
             services.AddTransient<IRiskRepository, RiskRepository>();
+            services.AddTransient<IPolicyService, PolicyService>();
+            services.AddTransient<IRiskService, RiskService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

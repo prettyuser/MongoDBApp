@@ -2,6 +2,7 @@
 using DataAccess.Repository.Base;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Services.BusinessLogic.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,10 @@ namespace MongoDBApp.Controllers
     [Route("api/[controller]")]
     public class RisksController
     {
-        private readonly IRiskRepository _riskRepository;
+        //private IRiskService _riskService;
+        private IRiskService _riskRepository;
 
-        public RisksController(IRiskRepository riskRepository)
+        public RisksController(IRiskService riskRepository)
         {
             _riskRepository = riskRepository;
         }
@@ -30,7 +32,6 @@ namespace MongoDBApp.Controllers
             var risks = await _riskRepository.Get();
             return JsonConvert.SerializeObject(risks);
         }
-
 
 
         [HttpGet("{id}")]

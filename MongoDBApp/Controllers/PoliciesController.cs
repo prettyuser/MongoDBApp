@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DataAccess.Repository.Base;
+using Services.BusinessLogic.Base;
 
 namespace MongoDBApp.Controllers
 {
@@ -13,11 +13,11 @@ namespace MongoDBApp.Controllers
     public class PoliciesController
     {
         
-        private readonly IPolicyRepository _policyRepository;
+        private readonly IPolicyService _policyService;
 
-        public PoliciesController(IPolicyRepository policyRepository)
+        public PoliciesController(IPolicyService policyService)
         {
-            _policyRepository = policyRepository;
+            _policyService = policyService;
         }
 
         [HttpGet]
@@ -28,7 +28,7 @@ namespace MongoDBApp.Controllers
 
         private async Task<string> GetPolicy()
         {
-            var policies = await _policyRepository.Get();
+            var policies = await _policyService.Get();
             return JsonConvert.SerializeObject(policies);
         }
 
@@ -42,14 +42,14 @@ namespace MongoDBApp.Controllers
 
         private async Task<string> GetPolicyById(string id)
         {
-            var policy = await _policyRepository.Get(id) ?? new Policy();
+            var policy = await _policyService.Get(id) ?? new Policy();
             return JsonConvert.SerializeObject(policy);
         }
 
         [HttpPost]
         public async Task<string> Post([FromBody] Policy policy)
         {
-            await _policyRepository.Add(policy);
+            await _policyService.Add(policy);
             return "";
         }
 
@@ -57,7 +57,7 @@ namespace MongoDBApp.Controllers
         public async Task<string> Put(string id, [FromBody] Policy policy)
         {
             if (string.IsNullOrEmpty(id)) return "Invalid id";
-            return await _policyRepository.Update(id, policy);            
+            return await _policyService.Update(id, policy);            
         }
 
         [HttpDelete("{id}")]
@@ -66,7 +66,7 @@ namespace MongoDBApp.Controllers
             if (string.IsNullOrEmpty(id))
                 return "Invalid id";
 
-            await _policyRepository.Remove(id);
+            await _policyService.Remove(id);
             return "";
         }
     }

@@ -5,16 +5,16 @@ using System.Text;
 using DataAccess.Models;
 using MongoDB.Driver;
 using System.Threading.Tasks;
-
+using DataAccess.Repository.Base;
 
 namespace Services.BusinessLogic
 {
-    class PolicyService
+    public class PolicyService
         : Base.IPolicyService
     {
-        private IPolicyService _policyRepository = null;
+        private IPolicyRepository _policyRepository = null;
 
-        public PolicyService(IPolicyService policyRepository)
+        public PolicyService(IPolicyRepository policyRepository)
         {
             _policyRepository = policyRepository;//asdasdsadadasdasdasda
         }
