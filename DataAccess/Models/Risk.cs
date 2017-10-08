@@ -20,5 +20,9 @@ namespace DataAccess.Models
         /// Risk yearly price
         /// </summary>
         public decimal YearlyPrice { get; set; }
+
+        public DateTime RiskFrom { get; set; }
+
+        public DateTime RiskTill { get; set; }
     }
 }

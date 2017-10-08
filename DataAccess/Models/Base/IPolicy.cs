@@ -7,20 +7,6 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Models.Base
 {
-    //public struct Risk
-    //{
-    //    [BsonId]
-    //    [BsonRepresentation(BsonType.ObjectId)]
-    //    public string Id { get; set; }
-    //    /// <summary>
-    //    /// Unique name of the risk
-    //    /// </summary>
-    //    public string Name { get; set; }
-    //    /// <summary>
-    //    /// Risk yearly price
-    //    /// </summary>
-    //    public decimal YearlyPrice { get; set; }
-    //}
 
     public interface IPolicy
     {

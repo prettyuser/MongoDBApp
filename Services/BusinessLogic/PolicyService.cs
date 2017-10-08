@@ -16,7 +16,7 @@ namespace Services.BusinessLogic
 
         public PolicyService(IPolicyRepository policyRepository)
         {
-            _policyRepository = policyRepository;//asdasdsadadasdasdasda
+            _policyRepository = policyRepository;
         }
 
         public async Task Add(Policy policy)

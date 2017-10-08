@@ -13,12 +13,11 @@ namespace MongoDBApp.Controllers
     [Route("api/[controller]")]
     public class RisksController
     {
-        //private IRiskService _riskService;
-        private IRiskService _riskRepository;
+        private IRiskService _riskService;
 
-        public RisksController(IRiskService riskRepository)
+        public RisksController(IRiskService riskService)
         {
-            _riskRepository = riskRepository;
+            _riskService = riskService;
         }
 
         [HttpGet]
@@ -29,7 +28,7 @@ namespace MongoDBApp.Controllers
 
         private async Task<string> GetRisk()
         {
-            var risks = await _riskRepository.Get();
+            var risks = await _riskService.Get();
             return JsonConvert.SerializeObject(risks);
         }
 
@@ -42,14 +41,14 @@ namespace MongoDBApp.Controllers
 
         private async Task<string> GetRiskById(string id)
         {
-            var risk = await _riskRepository.Get(id) ?? new Risk();
+            var risk = await _riskService.Get(id) ?? new Risk();
             return JsonConvert.SerializeObject(risk);
         }
 
         [HttpPost]
         public async Task<string> Post([FromBody] Risk risk)
         {
-            await _riskRepository.Add(risk);
+            await _riskService.Add(risk);
             return "";
         }
 
@@ -57,7 +56,7 @@ namespace MongoDBApp.Controllers
         public async Task<string> Put(string id, [FromBody] Risk risk)
         {
             if (string.IsNullOrEmpty(id)) return "Invalid id";
-            return await _riskRepository.Update(id, risk);
+            return await _riskService.Update(id, risk);
         }
 
         [HttpDelete("{id}")]
@@ -66,7 +65,7 @@ namespace MongoDBApp.Controllers
             if (string.IsNullOrEmpty(id))
                 return "Invalid id";
 
-            await _riskRepository.Remove(id);
+            await _riskService.Remove(id);
             return "";
         }
     }

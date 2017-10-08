@@ -16,5 +16,9 @@ namespace DataAccess.Models.Base
         /// </summary>
         decimal YearlyPrice { get; set; }
 
+        DateTime RiskFrom { get; set; }
+
+        DateTime RiskTill { get; set; }
+
     }
 }

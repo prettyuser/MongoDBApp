@@ -14,13 +14,6 @@ namespace DataAccess.Repository
     public class PolicyRepository 
         : AbstractRepository, IPolicyRepository
     {
-        //private readonly ObjectContext _context = null;
-
-        //public PolicyRepository(IOptions<Settings> settings)
-        //{
-        //    _context = new ObjectContext(settings);
-        //}
-
         public PolicyRepository(IOptions<Settings> settings) 
             : base(settings)
         {

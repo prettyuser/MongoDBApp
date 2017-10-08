@@ -14,13 +14,6 @@ namespace DataAccess.Repository
     public class RiskRepository 
         : AbstractRepository, IRiskRepository
     {
-        //private readonly ObjectContext _context = null;
-
-        //public RiskRepository(IOptions<Settings> settings)
-        //{
-        //    _context = new ObjectContext(settings);
-        //}
-
         public RiskRepository(IOptions<Settings> settings) 
             : base(settings)
         {

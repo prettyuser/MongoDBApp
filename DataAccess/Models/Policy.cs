@@ -8,23 +8,23 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Models
 {
-    public class Policy
+    public class Policy : IPolicy
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
 
-        public string Name { get; set; }
+        public string NameOfInsuredObject { get; set; }
+        
+        public DateTime ValidFrom { get; set; }
 
-        public string Roll { get; set; }
+        public DateTime ValidTill { get; set; }
 
+        public decimal Premium { get; set; }
 
+        public IList<Risk> InsuredRisks { get; set; }
 
+        public short ValidMonths { get; set; }
 
-        //public string NameOfInsuredObject { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        //public DateTime ValidFrom { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        //public DateTime ValidTill { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        //public decimal Premium { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        //public IList<Risk> InsuredRisks { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }
 }

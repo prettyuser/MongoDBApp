@@ -39,6 +39,7 @@ namespace MongoDBApp
             services.AddTransient<IRiskRepository, RiskRepository>();
             services.AddTransient<IPolicyService, PolicyService>();
             services.AddTransient<IRiskService, RiskService>();
+            services.AddTransient<IInsuranceCompany, InsuranceCompany>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
