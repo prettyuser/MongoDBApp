@@ -22,30 +22,30 @@ namespace MongoDBApp.Controllers
 
         [HttpGet]
         [ActionName("AvailableRisks")]
-        public string GetAll()
+        public string GetAvailableRisks()
         {
             var risks = _insuranceCompany.AvailableRisks;
             return JsonConvert.SerializeObject(risks);
-
-            //return this.GetAllRisks();
         }
 
-        //private string GetAllRisks()
-        //{
-        //    var risks = _insuranceCompany.AvailableRisks;
-        //    return JsonConvert.SerializeObject(risks);
-        //}
+        [HttpPost]
+        [ActionName("PolicyState")]
+        public string GetPolicyState([FromBody] Policy policy)
+        {
+            var riskState = _insuranceCompany.GetPolicy(policy.NameOfInsuredObject, DateTime.Now);
+            return JsonConvert.SerializeObject(riskState);
+        }
 
         [HttpPost]
         [ActionName("SellPolicy")]
-        public IPolicy Post([FromBody] Policy policy)
+        public IPolicy PostSellPolicy([FromBody] Policy policy)
         {
             return _insuranceCompany.SellPolicy(policy.NameOfInsuredObject, policy.ValidFrom, policy.ValidMonths, policy.InsuredRisks);
         }
 
         [HttpPost]
         [ActionName("AddRiskPolicy")]
-        public string PostRiskPolicy([FromBody] Policy policy)
+        public string PostAddRiskPolicy([FromBody] Policy policy)
         {
             _insuranceCompany.AddRisk(policy.NameOfInsuredObject, _insuranceCompany.AvailableRisks.First(x => x.YearlyPrice == 3355), DateTime.Now);
             return "";
@@ -53,11 +53,13 @@ namespace MongoDBApp.Controllers
 
         [HttpPost]
         [ActionName("DeleteRiskPolicy")]
-        public string Delete([FromBody] Policy policy)
+        public string PostDeleteRiskPolicy([FromBody] Policy policy)
         {
             _insuranceCompany.RemoveRisk(policy.NameOfInsuredObject, _insuranceCompany.AvailableRisks.First(x => x.YearlyPrice == 3355), DateTime.Now);
             return "";
         }
+
+
 
     }
 }

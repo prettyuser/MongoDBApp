@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using MongoDB.Driver;
 using System.Linq;
 using DataAccess.Models.Base;
+using AutoMapper;
 
 namespace Services.BusinessLogic
 {
@@ -59,7 +60,29 @@ namespace Services.BusinessLogic
 
         public IPolicy GetPolicy(string nameOfInsuredObject, DateTime effectiveDate)
         {
-            throw new NotImplementedException();
+            //we believe we have unique names of insured objects
+            var policy = _policyRepository.Get().Result.Where(x => x.NameOfInsuredObject == nameOfInsuredObject).First();
+
+            var policy_to_get = new Policy();
+
+            //clone the instance for working with its copy
+            Mapper.Initialize(cfg => cfg.CreateMap<Policy, Policy>());
+            policy_to_get = Mapper.Map<Policy>(policy);
+
+            //setting flags 'IsActive'
+            foreach(var item in policy_to_get.InsuredRisks) 
+            {
+                if (effectiveDate >= item.RiskFrom && effectiveDate <= item.RiskTill)
+                    item.IsActive = true;
+                else
+                    item.IsActive = false;
+            }
+            
+            //calc the premium at the moment
+            policy_to_get.Premium = CalcPolicyPremium(policy_to_get.InsuredRisks);
+
+
+            return policy_to_get;
         }
 
         public void RemoveRisk(string nameOfInsuredObject, Risk risk, DateTime validTill)
@@ -76,32 +99,19 @@ namespace Services.BusinessLogic
             _policyRepository.Update(policy.Id, policy);
         }
 
-        //public decimal CalcPolicyPremium(Policy policy)
-        //{
-            
-        //    decimal total_price = 0;
-
-        //    foreach (var item in policy.InsuredRisks)
-        //    {
-        //        var days_in_risk = (int) (item.RiskTill - item.RiskFrom).TotalDays; // all days in policy
-        //        var daily_price = item.YearlyPrice / 365; // price per day
-        //        var realprice = days_in_risk * daily_price;
-        //        total_price += realprice;
-        //    }
-
-        //    return total_price;
-        //}
-
         public decimal CalcPolicyPremium(IList<Risk> listrisk)
         {
             decimal total_price = 0;
 
             foreach (var item in listrisk)
             {
-                var days_in_risk = (int) (item.RiskTill - item.RiskFrom).TotalDays; // all days in policy
-                var daily_price = item.YearlyPrice / 365; // price per day
-                var realprice = days_in_risk * daily_price;
-                total_price += realprice;
+                if (item.IsActive)
+                {
+                    var days_in_risk = (int) (item.RiskTill - item.RiskFrom).TotalDays; // all days in policy
+                    var daily_price = item.YearlyPrice / 365; // price per day
+                    var realprice = days_in_risk * daily_price;
+                    total_price += realprice;
+                }
             }
 
             return total_price;
