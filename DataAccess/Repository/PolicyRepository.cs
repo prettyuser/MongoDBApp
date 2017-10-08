@@ -40,7 +40,7 @@ namespace DataAccess.Repository
         {
             return await base._context.Policies.DeleteOneAsync(Builders<Policy>.Filter.Eq("Id", id)).ConfigureAwait(false);
         }
-
+        
         public async Task<DeleteResult> RemoveAll()
         {
             return await base._context.Policies.DeleteManyAsync(new BsonDocument()).ConfigureAwait(false);

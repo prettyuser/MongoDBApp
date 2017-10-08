@@ -25,71 +25,12 @@ namespace Services.BusinessLogic
 
         public string Name => "IF...";
 
-        #region Risks Service
-        public async Task AddRisk(Risk risk)
-        {
-            await _riskRepository.Add(risk).ConfigureAwait(false);
-        }
-
-        public async Task<DeleteResult> RemoveRisk(string id)
-        {
-            return await _riskRepository.Remove(id).ConfigureAwait(false);
-        }
-
-        public async Task<DeleteResult> RemoveAllRisks()
-        {
-            return await _riskRepository.RemoveAll().ConfigureAwait(false);
-        }
-
-        public async Task<string> UpdateRisks(string id, Risk risk)
-        {
-            return await _riskRepository.Update(id, risk).ConfigureAwait(false);
-        }
-
-        public async Task<IEnumerable<Risk>> GetRisks()
-        {
-            return await _riskRepository.Get().ConfigureAwait(false);
-        }
-        #endregion
-
-        #region Policy Service
-        public async Task AddPolicy(Policy policy)
-        {
-            await _policyRepository.Add(policy).ConfigureAwait(false);
-        }
-
-        public async Task<IEnumerable<Policy>> GetPolicy()
-        {
-            return await _policyRepository.Get().ConfigureAwait(false);
-        }
-
-        public async Task<Policy> GetPolicyById(string id)
-        {
-            return await _policyRepository.Get(id).ConfigureAwait(false);
-        }
-
-        public async Task<DeleteResult> RemovePolicy(string id)
-        {
-            return await _policyRepository.Remove(id).ConfigureAwait(false);
-        }
-
-        public async Task<DeleteResult> RemoveAllPolicies()
-        {
-            return await _policyRepository.RemoveAll().ConfigureAwait(false);
-        }
-
-        public async Task<string> UpdatePolicy(string id, Policy policy)
-        {
-            return await _policyRepository.Update(id, policy).ConfigureAwait(false);
-        }
-        #endregion
-
         #region interface implementation
         public IList<Risk> AvailableRisks
         {
             get
             {
-                return GetRisks().Result.ToList();
+                return _riskRepository.Get().Result.ToList();
             }
             set
             {
@@ -99,7 +40,21 @@ namespace Services.BusinessLogic
 
         public void AddRisk(string nameOfInsuredObject, Risk risk, DateTime validFrom)
         {
-            throw new NotImplementedException();
+            var policy = _policyRepository.Get().Result.Where(x => x.NameOfInsuredObject == nameOfInsuredObject).First();
+
+            risk.RiskFrom = validFrom;
+            risk.RiskTill = policy.ValidTill;
+
+            if(validFrom > DateTime.Now)
+            {
+                risk.IsActive = false;
+            }
+
+            policy.InsuredRisks.Add(risk);
+
+            policy.Premium = CalcPolicyPremium(policy.InsuredRisks);
+
+            _policyRepository.Update(policy.Id, policy);
         }
 
         public IPolicy GetPolicy(string nameOfInsuredObject, DateTime effectiveDate)
@@ -109,7 +64,47 @@ namespace Services.BusinessLogic
 
         public void RemoveRisk(string nameOfInsuredObject, Risk risk, DateTime validTill)
         {
-            throw new NotImplementedException();
+            var policy = _policyRepository.Get().Result.Where(x => x.NameOfInsuredObject == nameOfInsuredObject).First();
+
+            List<Risk> _list_to_remove = new List<Risk>();
+            _list_to_remove = (List<Risk>) policy.InsuredRisks;
+            _list_to_remove.RemoveAll(x => x.Id == risk.Id);
+            policy.InsuredRisks = _list_to_remove;
+                
+            policy.Premium = CalcPolicyPremium(policy.InsuredRisks);
+
+            _policyRepository.Update(policy.Id, policy);
+        }
+
+        //public decimal CalcPolicyPremium(Policy policy)
+        //{
+            
+        //    decimal total_price = 0;
+
+        //    foreach (var item in policy.InsuredRisks)
+        //    {
+        //        var days_in_risk = (int) (item.RiskTill - item.RiskFrom).TotalDays; // all days in policy
+        //        var daily_price = item.YearlyPrice / 365; // price per day
+        //        var realprice = days_in_risk * daily_price;
+        //        total_price += realprice;
+        //    }
+
+        //    return total_price;
+        //}
+
+        public decimal CalcPolicyPremium(IList<Risk> listrisk)
+        {
+            decimal total_price = 0;
+
+            foreach (var item in listrisk)
+            {
+                var days_in_risk = (int) (item.RiskTill - item.RiskFrom).TotalDays; // all days in policy
+                var daily_price = item.YearlyPrice / 365; // price per day
+                var realprice = days_in_risk * daily_price;
+                total_price += realprice;
+            }
+
+            return total_price;
         }
 
         public IPolicy SellPolicy(string nameOfInsuredObject, DateTime validFrom, short validMonths, IList<Risk> selectedRisks)
@@ -128,16 +123,13 @@ namespace Services.BusinessLogic
             {
                 item.RiskFrom = validFrom;
                 item.RiskTill = validTill;
-
-                var days_in_risk = (int) (item.RiskTill - item.RiskFrom).TotalDays; // all days in policy
-                var daily_price = item.YearlyPrice / 365; // price per day
-                var realprice = days_in_risk * daily_price;
-                total_price += realprice;
             }
+
+            total_price = CalcPolicyPremium(selectedRisks);
 
             Policy _policy = new Policy { NameOfInsuredObject = nameOfInsuredObject, InsuredRisks = selectedRisks, ValidFrom = validFrom, ValidTill = validFrom.AddMonths(validMonths), Premium = total_price, ValidMonths = validMonths };
 
-            AddPolicy(_policy);
+            _policyRepository.Add(_policy);
 
             return _policy;
         }

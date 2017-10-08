@@ -24,5 +24,7 @@ namespace DataAccess.Models
         public DateTime RiskFrom { get; set; }
 
         public DateTime RiskTill { get; set; }
+
+        public bool IsActive { get; set; } = true;
     }
 }

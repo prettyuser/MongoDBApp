@@ -1,4 +1,5 @@
 ﻿using DataAccess.Models;
+using DataAccess.Models.Base;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Services.BusinessLogic.Base;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MongoDBApp.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     public class IfCompanyController
     {
         private IInsuranceCompany _insuranceCompany;
@@ -20,21 +21,41 @@ namespace MongoDBApp.Controllers
         }
 
         [HttpGet]
-        public Task<string> GetAll()
-        {
-            return this.GetAllRisks();
-        }
-
-        private async Task<string> GetAllRisks()
+        [ActionName("AvailableRisks")]
+        public string GetAll()
         {
             var risks = _insuranceCompany.AvailableRisks;
-            return await Task.Run(() => JsonConvert.SerializeObject(risks));
+            return JsonConvert.SerializeObject(risks);
+
+            //return this.GetAllRisks();
+        }
+
+        //private string GetAllRisks()
+        //{
+        //    var risks = _insuranceCompany.AvailableRisks;
+        //    return JsonConvert.SerializeObject(risks);
+        //}
+
+        [HttpPost]
+        [ActionName("SellPolicy")]
+        public IPolicy Post([FromBody] Policy policy)
+        {
+            return _insuranceCompany.SellPolicy(policy.NameOfInsuredObject, policy.ValidFrom, policy.ValidMonths, policy.InsuredRisks);
         }
 
         [HttpPost]
-        public async Task<string> Post([FromBody] Policy policy)
+        [ActionName("AddRiskPolicy")]
+        public string PostRiskPolicy([FromBody] Policy policy)
         {
-            await Task.Run(() => _insuranceCompany.SellPolicy(policy.NameOfInsuredObject, policy.ValidFrom, policy.ValidMonths, policy.InsuredRisks));
+            _insuranceCompany.AddRisk(policy.NameOfInsuredObject, _insuranceCompany.AvailableRisks.First(x => x.YearlyPrice == 3355), DateTime.Now);
+            return "";
+        }
+
+        [HttpPost]
+        [ActionName("DeleteRiskPolicy")]
+        public string Delete([FromBody] Policy policy)
+        {
+            _insuranceCompany.RemoveRisk(policy.NameOfInsuredObject, _insuranceCompany.AvailableRisks.First(x => x.YearlyPrice == 3355), DateTime.Now);
             return "";
         }
 
