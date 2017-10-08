@@ -9,7 +9,7 @@ namespace MongoDBApp.Controllers
     /// <summary>
     /// Controller-helper to expand functionality of access to risks separately 
     /// </summary>
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     public class RisksController
     {
         private IRiskService _riskService;
@@ -21,6 +21,7 @@ namespace MongoDBApp.Controllers
 
         //get all risks
         [HttpGet]
+        [ActionName("GetRisks")]
         public Task<string> Get()
         {
             return this.GetRisk();
@@ -34,6 +35,7 @@ namespace MongoDBApp.Controllers
 
         //get one risk by its id
         [HttpGet("{id}")]
+        [ActionName("GetRiskById")]
         public Task<string> Get(string id)
         {
             return this.GetRiskById(id);
@@ -47,6 +49,7 @@ namespace MongoDBApp.Controllers
 
         //create risk
         [HttpPost]
+        [ActionName("CreateRisk")]
         public async Task<string> Post([FromBody] Risk risk)
         {
             await _riskService.Add(risk);
@@ -55,6 +58,7 @@ namespace MongoDBApp.Controllers
 
         //modify risk
         [HttpPut("{id}")]
+        [ActionName("ModifyRisk")]
         public async Task<string> Put(string id, [FromBody] Risk risk)
         {
             if (string.IsNullOrEmpty(id)) return "Invalid id";
@@ -63,6 +67,7 @@ namespace MongoDBApp.Controllers
 
         //delete risk
         [HttpDelete("{id}")]
+        [ActionName("DeleteRisk")]
         public async Task<string> Delete(string id)
         {
             if (string.IsNullOrEmpty(id))

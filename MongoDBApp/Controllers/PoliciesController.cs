@@ -9,7 +9,7 @@ namespace MongoDBApp.Controllers
     /// <summary>
     /// Controller-helper to expand functionality of access to policies separately 
     /// </summary>
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     public class PoliciesController
     {
         
@@ -22,6 +22,7 @@ namespace MongoDBApp.Controllers
 
         //get all policies
         [HttpGet]
+        [ActionName("GetPolicies")]
         public Task<string> Get()
         {
             return this.GetPolicy();
@@ -35,6 +36,7 @@ namespace MongoDBApp.Controllers
 
         //get one policy by its id
         [HttpGet("{id}")]
+        [ActionName("GetPolicyById")]
         public Task<string> Get(string id)
         {
             return this.GetPolicyById(id);
@@ -48,6 +50,7 @@ namespace MongoDBApp.Controllers
 
         //create policy
         [HttpPost]
+        [ActionName("CreatePolicy")]
         public async Task<string> Post([FromBody] Policy policy)
         {
             await _policyService.Add(policy);
@@ -56,6 +59,7 @@ namespace MongoDBApp.Controllers
 
         //modify policy
         [HttpPut("{id}")]
+        [ActionName("ModifyPolicy")]
         public async Task<string> Put(string id, [FromBody] Policy policy)
         {
             if (string.IsNullOrEmpty(id)) return "Invalid id";
@@ -64,6 +68,7 @@ namespace MongoDBApp.Controllers
 
         //delete policy
         [HttpDelete("{id}")]
+        [ActionName("DeletePolicyById")]
         public async Task<string> Delete(string id)
         {
             if (string.IsNullOrEmpty(id))
