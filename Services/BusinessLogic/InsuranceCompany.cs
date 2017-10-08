@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using DataAccess.Models;
 using DataAccess.Repository.Base;
-using System.Threading.Tasks;
 using MongoDB.Driver;
 using System.Linq;
 using DataAccess.Models.Base;
@@ -11,6 +9,9 @@ using AutoMapper;
 
 namespace Services.BusinessLogic
 {
+    /// <summary>
+    /// Main service-level-class implemented task's interface for IInsurance company
+    /// </summary>
     public class InsuranceCompany : 
         Base.IInsuranceCompany
     {
@@ -18,15 +19,19 @@ namespace Services.BusinessLogic
         private IRiskRepository _riskRepository = null;
         IList<Risk> listrisks;
 
+        //ctor using 2 repositories: policies and risks
         public InsuranceCompany(IPolicyRepository policyRepository, IRiskRepository riskRepository)
         {
             _policyRepository = policyRepository;
             _riskRepository = riskRepository;
         }
 
+        //We believe we have one company that implemented this API service
         public string Name => "IF...";
 
         #region interface implementation
+        
+        //Get all available risks
         public IList<Risk> AvailableRisks
         {
             get
@@ -39,6 +44,7 @@ namespace Services.BusinessLogic
             }
         }
 
+        //Add risks for insured objects
         public void AddRisk(string nameOfInsuredObject, Risk risk, DateTime validFrom)
         {
             var policy = _policyRepository.Get().Result.Where(x => x.NameOfInsuredObject == nameOfInsuredObject).First();
@@ -58,6 +64,7 @@ namespace Services.BusinessLogic
             _policyRepository.Update(policy.Id, policy);
         }
 
+        //Get the state of policy for the date
         public IPolicy GetPolicy(string nameOfInsuredObject, DateTime effectiveDate)
         {
             //we believe we have unique names of insured objects
@@ -85,6 +92,7 @@ namespace Services.BusinessLogic
             return policy_to_get;
         }
 
+        //Remove risks for insured objects
         public void RemoveRisk(string nameOfInsuredObject, Risk risk, DateTime validTill)
         {
             var policy = _policyRepository.Get().Result.Where(x => x.NameOfInsuredObject == nameOfInsuredObject).First();
@@ -99,6 +107,7 @@ namespace Services.BusinessLogic
             _policyRepository.Update(policy.Id, policy);
         }
 
+        //calc method for overall policy's premium
         public decimal CalcPolicyPremium(IList<Risk> listrisk)
         {
             decimal total_price = 0;
@@ -117,6 +126,7 @@ namespace Services.BusinessLogic
             return total_price;
         }
 
+        //Return and create policy in DB with initial (examples) list of risks
         public IPolicy SellPolicy(string nameOfInsuredObject, DateTime validFrom, short validMonths, IList<Risk> selectedRisks)
         {
             var validTill = validFrom.AddMonths(validMonths);

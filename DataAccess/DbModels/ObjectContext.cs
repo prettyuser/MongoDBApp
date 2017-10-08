@@ -2,16 +2,16 @@
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using DataAccess.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DataAccess.DbModels
 {
+    /// <summary>
+    /// Class to create a db context for MongoDB
+    /// </summary>
     public class ObjectContext
     {
         public IConfigurationRoot Configuration { get; }
+
         private IMongoDatabase _database = null;
 
         public ObjectContext(IOptions<Settings> settings)
@@ -26,6 +26,7 @@ namespace DataAccess.DbModels
                 _database = client.GetDatabase(settings.Value.Database);
             }
         }
+
         public IMongoCollection<Policy> Policies
         {
             get
@@ -41,7 +42,5 @@ namespace DataAccess.DbModels
                 return _database.GetCollection<Risk>("AvailableRisk");
             }
         }
-
-
     }
 }

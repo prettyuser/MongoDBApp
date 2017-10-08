@@ -1,15 +1,14 @@
 ﻿using DataAccess.Models;
-using DataAccess.Repository.Base;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Services.BusinessLogic.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace MongoDBApp.Controllers
 {
+    /// <summary>
+    /// Controller-helper to expand functionality of access to risks separately 
+    /// </summary>
     [Route("api/[controller]")]
     public class RisksController
     {
@@ -20,6 +19,7 @@ namespace MongoDBApp.Controllers
             _riskService = riskService;
         }
 
+        //get all risks
         [HttpGet]
         public Task<string> Get()
         {
@@ -32,7 +32,7 @@ namespace MongoDBApp.Controllers
             return JsonConvert.SerializeObject(risks);
         }
 
-
+        //get one risk by its id
         [HttpGet("{id}")]
         public Task<string> Get(string id)
         {
@@ -45,6 +45,7 @@ namespace MongoDBApp.Controllers
             return JsonConvert.SerializeObject(risk);
         }
 
+        //create risk
         [HttpPost]
         public async Task<string> Post([FromBody] Risk risk)
         {
@@ -52,6 +53,7 @@ namespace MongoDBApp.Controllers
             return "";
         }
 
+        //modify risk
         [HttpPut("{id}")]
         public async Task<string> Put(string id, [FromBody] Risk risk)
         {
@@ -59,6 +61,7 @@ namespace MongoDBApp.Controllers
             return await _riskService.Update(id, risk);
         }
 
+        //delete risk
         [HttpDelete("{id}")]
         public async Task<string> Delete(string id)
         {

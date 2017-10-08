@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using DataAccess.Models;
 using MongoDB.Driver;
@@ -8,6 +6,9 @@ using DataAccess.Repository.Base;
 
 namespace Services.BusinessLogic
 {
+    /// <summary>
+    /// Service level for access the risks in DB through repositories
+    /// </summary>
     public class RiskService
         :Base.IRiskService
     {

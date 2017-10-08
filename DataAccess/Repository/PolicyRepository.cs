@@ -2,7 +2,6 @@
 using DataAccess.DbModels;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 using DataAccess.Models;
@@ -11,6 +10,9 @@ using DataAccess.Repository.Base;
 
 namespace DataAccess.Repository
 {
+    /// <summary>
+    /// Class for policy's repository with async methods. Basic CRUD operations
+    /// </summary>
     public class PolicyRepository 
         : AbstractRepository, IPolicyRepository
     {

@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using DataAccess.Models;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Services.BusinessLogic.Base;
 
 namespace MongoDBApp.Controllers
 {
+    /// <summary>
+    /// Controller-helper to expand functionality of access to policies separately 
+    /// </summary>
     [Route("api/[controller]")]
     public class PoliciesController
     {
@@ -20,20 +20,20 @@ namespace MongoDBApp.Controllers
             _policyService = policyService;
         }
 
+        //get all policies
         [HttpGet]
         public Task<string> Get()
         {
             return this.GetPolicy();
         }
-
+        
         private async Task<string> GetPolicy()
         {
             var policies = await _policyService.Get();
             return JsonConvert.SerializeObject(policies);
         }
 
-
-
+        //get one policy by its id
         [HttpGet("{id}")]
         public Task<string> Get(string id)
         {
@@ -46,6 +46,7 @@ namespace MongoDBApp.Controllers
             return JsonConvert.SerializeObject(policy);
         }
 
+        //create policy
         [HttpPost]
         public async Task<string> Post([FromBody] Policy policy)
         {
@@ -53,6 +54,7 @@ namespace MongoDBApp.Controllers
             return "";
         }
 
+        //modify policy
         [HttpPut("{id}")]
         public async Task<string> Put(string id, [FromBody] Policy policy)
         {
@@ -60,6 +62,7 @@ namespace MongoDBApp.Controllers
             return await _policyService.Update(id, policy);            
         }
 
+        //delete policy
         [HttpDelete("{id}")]
         public async Task<string> Delete(string id)
         {

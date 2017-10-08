@@ -1,7 +1,4 @@
-﻿using Services.BusinessLogic.Base;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using DataAccess.Models;
 using MongoDB.Driver;
 using System.Threading.Tasks;
@@ -12,6 +9,9 @@ namespace Services.BusinessLogic
     public class PolicyService
         : Base.IPolicyService
     {
+        /// <summary>
+        /// Service level for access the policies in DB through repositories
+        /// </summary>
         private IPolicyRepository _policyRepository = null;
 
         public PolicyService(IPolicyRepository policyRepository)

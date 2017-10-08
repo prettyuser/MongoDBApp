@@ -1,7 +1,5 @@
 ﻿using DataAccess.Repository.Base;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using DataAccess.Models;
 using MongoDB.Driver;
 using System.Threading.Tasks;
@@ -11,6 +9,9 @@ using MongoDB.Bson;
 
 namespace DataAccess.Repository
 {
+    /// <summary>
+    /// Class for risk's repository with async methods. Basic CRUD operations
+    /// </summary>
     public class RiskRepository 
         : AbstractRepository, IRiskRepository
     {
