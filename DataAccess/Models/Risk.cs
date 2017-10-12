@@ -7,12 +7,12 @@ using System.Text;
 
 namespace DataAccess.Models
 {
-    public class Risk : IRisk
+    public struct Risk : IRisk
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
-       
+
         public string Name { get; set; }
        
         public decimal YearlyPrice { get; set; }
@@ -21,6 +21,6 @@ namespace DataAccess.Models
 
         public DateTime RiskTill { get; set; }
 
-        public bool IsActive { get; set; } = true;
+        public bool IsActive { get; set; }
     }
 }

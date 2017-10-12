@@ -12,6 +12,9 @@ using DataAccess.Repository;
 using DataAccess.Repository.Base;
 using Services.BusinessLogic.Base;
 using Services.BusinessLogic;
+using MongoDB.Bson.Serialization;
+using Utility;
+using DataAccess.Models;
 
 namespace MongoDBApp
 {
@@ -25,6 +28,7 @@ namespace MongoDBApp
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
+            BsonSerializer.RegisterSerializer(typeof(double), new BasicStructSerializer<Risk>());
         }
 
         public IConfigurationRoot Configuration { get; }

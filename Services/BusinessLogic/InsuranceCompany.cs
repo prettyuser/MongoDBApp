@@ -77,13 +77,13 @@ namespace Services.BusinessLogic
             policy_to_get = Mapper.Map<Policy>(policy);
 
             //setting flags 'IsActive'
-            foreach(var item in policy_to_get.InsuredRisks) 
-            {
-                if (effectiveDate >= item.RiskFrom && effectiveDate <= item.RiskTill)
-                    item.IsActive = true;
-                else
-                    item.IsActive = false;
-            }
+            //foreach(var item in policy_to_get.InsuredRisks) 
+            //{
+            //    if (effectiveDate >= item.RiskFrom && effectiveDate <= item.RiskTill)
+            //        item.IsActive = true;
+            //    else
+            //        item.IsActive = false;
+            //}
             
             //calc the premium at the moment
             policy_to_get.Premium = CalcPolicyPremium(policy_to_get.InsuredRisks);
@@ -134,16 +134,18 @@ namespace Services.BusinessLogic
 
             if (selectedRisks == null)
             {
-                selectedRisks = new List<Risk>();
-                selectedRisks.Add(_riskRepository.Get("59d7862f40860722a8cd9698").Result);
-                selectedRisks.Add(_riskRepository.Get("59d8a6a3b830e6266cf1738b").Result);
+                selectedRisks = new List<Risk>
+                {
+                    _riskRepository.Get("59d7862f40860722a8cd9698").Result,
+                    _riskRepository.Get("59d8a6a3b830e6266cf1738b").Result
+                };
             }
 
-            foreach (var item in selectedRisks)
-            {
-                item.RiskFrom = validFrom;
-                item.RiskTill = validTill;
-            }
+            //foreach (var item in selectedRisks)
+            //{
+            //    item.RiskFrom = validFrom;
+            //    item.RiskTill = validTill;
+            //}
 
             total_price = CalcPolicyPremium(selectedRisks);
 

@@ -43,7 +43,7 @@ namespace MongoDBApp.Controllers
 
         private async Task<string> GetRiskById(string id)
         {
-            var risk = await _riskService.Get(id) ?? new Risk();
+            var risk = await _riskService.Get(id);// ?? new Risk();
             return JsonConvert.SerializeObject(risk);
         }
 
