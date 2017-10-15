@@ -19,7 +19,10 @@ namespace MongoDBApp.Controllers
             _riskService = riskService;
         }
 
-        //get all risks
+        /// <summary>
+        /// Get all risks
+        /// </summary>
+        /// <returns>Whole list </returns>
         [HttpGet]
         [ActionName("GetRisks")]
         public Task<string> Get()
@@ -30,12 +33,18 @@ namespace MongoDBApp.Controllers
         private async Task<string> GetRisk()
         {
             var risks = await _riskService.Get();
-            return JsonConvert.SerializeObject(risks);
+
+            return JsonConvert
+                .SerializeObject(risks);
         }
 
-        //get one risk by its id
+        /// <summary>
+        /// Get one risk by its name
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Risk</returns>
         [HttpGet("{id}")]
-        [ActionName("GetRiskById")]
+        [ActionName("GetRiskByName")]
         public Task<string> Get(string id)
         {
             return this.GetRiskById(id);
@@ -44,28 +53,48 @@ namespace MongoDBApp.Controllers
         private async Task<string> GetRiskById(string id)
         {
             var risk = await _riskService.Get(id);// ?? new Risk();
-            return JsonConvert.SerializeObject(risk);
+
+            return JsonConvert
+                .SerializeObject(risk);
         }
 
-        //create risk
+        /// <summary>
+        /// Create risk and add to company's available list or risks
+        /// </summary>
+        /// <param name="risk"></param>
+        /// <returns>Null</returns>
         [HttpPost]
         [ActionName("CreateRisk")]
         public async Task<string> Post([FromBody] Risk risk)
         {
-            await _riskService.Add(risk);
+            await _riskService
+                .Add(risk);
+
             return "";
         }
 
-        //modify risk
+        /// <summary>
+        /// Modify risk in available list or risks
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="risk"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         [ActionName("ModifyRisk")]
         public async Task<string> Put(string id, [FromBody] Risk risk)
         {
-            if (string.IsNullOrEmpty(id)) return "Invalid id";
-            return await _riskService.Update(id, risk);
+            if (string.IsNullOrEmpty(id))
+                return "Invalid id";
+
+            return await _riskService
+                .Update(id, risk);
         }
 
-        //delete risk
+        /// <summary>
+        /// Delete risk from entire available list or risks
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Null</returns>
         [HttpDelete("{id}")]
         [ActionName("DeleteRisk")]
         public async Task<string> Delete(string id)
@@ -73,7 +102,9 @@ namespace MongoDBApp.Controllers
             if (string.IsNullOrEmpty(id))
                 return "Invalid id";
 
-            await _riskService.Remove(id);
+            await _riskService
+                .Remove(id);
+
             return "";
         }
     }

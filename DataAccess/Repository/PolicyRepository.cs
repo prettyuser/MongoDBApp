@@ -23,34 +23,53 @@ namespace DataAccess.Repository
 
         public async Task Add(Policy policy)
         {
-            await base._context.Policies.InsertOneAsync(policy).ConfigureAwait(false);           
+            await base._context
+                .Policies
+                .InsertOneAsync(policy)
+                .ConfigureAwait(false);           
         }
 
         public async Task<IEnumerable<Policy>> Get()
         {
-            return await base._context.Policies.Find(x => true).ToListAsync().ConfigureAwait(false);
-            
+            return await base._context
+                .Policies
+                .Find(x => true)
+                .ToListAsync()
+                .ConfigureAwait(false);
         }
 
         public async Task<Policy> Get(string id)
         {
-            var policy = Builders<Policy>.Filter.Eq("Id", id);
-            return await base._context.Policies.Find(policy).FirstOrDefaultAsync().ConfigureAwait(false);
+            var policy = Builders<Policy>.Filter.Eq("NameOfInsuredObject", id);
+            return await base._context
+                .Policies
+                .Find(policy)
+                .FirstOrDefaultAsync()
+                .ConfigureAwait(false);
         }
 
         public async Task<DeleteResult> Remove(string id)
         {
-            return await base._context.Policies.DeleteOneAsync(Builders<Policy>.Filter.Eq("Id", id)).ConfigureAwait(false);
+            return await base._context
+                .Policies
+                .DeleteOneAsync(Builders<Policy>.Filter.Eq("NameOfInsuredObject", id))
+                .ConfigureAwait(false);
         }
         
         public async Task<DeleteResult> RemoveAll()
         {
-            return await base._context.Policies.DeleteManyAsync(new BsonDocument()).ConfigureAwait(false);
+            return await base._context
+                .Policies
+                .DeleteManyAsync(new BsonDocument())
+                .ConfigureAwait(false);
         }
 
         public async Task<string> Update(string id, Policy policy)
         {
-            await base._context.Policies.ReplaceOneAsync(x => x.Id == id, policy).ConfigureAwait(false);
+            await base._context
+                .Policies
+                .ReplaceOneAsync(x => x.NameOfInsuredObject == id, policy)
+                .ConfigureAwait(false);
             return "";
         }
     }

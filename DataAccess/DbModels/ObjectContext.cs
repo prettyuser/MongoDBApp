@@ -16,14 +16,24 @@ namespace DataAccess.DbModels
 
         public ObjectContext(IOptions<Settings> settings)
         {
-            Configuration = settings.Value.iConfigurationRoot;
-            settings.Value.ConnectionString = Configuration.GetSection("MongoConnection:ConnectionString").Value;
-            settings.Value.Database = Configuration.GetSection("MongoConnection:Database").Value;
+            Configuration = settings
+                            .Value
+                            .iConfigurationRoot;
+
+            settings.Value.ConnectionString = Configuration
+                                                .GetSection("MongoConnection:ConnectionString")
+                                                .Value;
+
+            settings.Value.Database = Configuration
+                                        .GetSection("MongoConnection:Database")
+                                        .Value;
 
             var client = new MongoClient(settings.Value.ConnectionString);
+
             if(client != null)
             {
-                _database = client.GetDatabase(settings.Value.Database);
+                _database = client  
+                            .GetDatabase(settings.Value.Database);
             }
         }
 
@@ -31,7 +41,8 @@ namespace DataAccess.DbModels
         {
             get
             {
-                return _database.GetCollection<Policy>("Policy");
+                return _database
+                        .GetCollection<Policy>("Policy");
             }
         }
 
@@ -39,7 +50,8 @@ namespace DataAccess.DbModels
         {
             get
             {
-                return _database.GetCollection<Risk>("AvailableRisk");
+                return _database
+                        .GetCollection<Risk>("AvailableRisk");
             }
         }
     }

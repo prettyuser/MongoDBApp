@@ -19,19 +19,47 @@ namespace Services.BusinessLogic
         private IRiskRepository _riskRepository = null;
         IList<Risk> listrisks;
 
-        //ctor using 2 repositories: policies and risks
+        /// <summary>
+        /// Constructor that using 2 repositories: policies and risks
+        /// </summary>
+        /// <param name="policyRepository"></param>
+        /// <param name="riskRepository"></param>
         public InsuranceCompany(IPolicyRepository policyRepository, IRiskRepository riskRepository)
         {
             _policyRepository = policyRepository;
             _riskRepository = riskRepository;
         }
 
-        //We believe we have one company that implemented this API service
-        public string Name => "IF...";
-
         #region interface implementation
-        
-        //Get all available risks
+
+        /// <summary>
+        /// Private field to change company's name through the function
+        /// </summary>
+        private string _companyName = "IF";
+
+        /// <summary>
+        /// Getter's property of company's Name
+        /// </summary>
+        public string Name
+        {
+            get
+            {
+                return this._companyName;
+            }
+        }
+
+        /// <summary>
+        /// Changes company's name
+        /// </summary>
+        /// <param name="_newCompanyName"></param>
+        public void ChangeCompanyName(string _newCompanyName)
+        {
+            this._companyName = _newCompanyName;
+        }
+
+        /// <summary>
+        /// Get all available risks
+        /// </summary>
         public IList<Risk> AvailableRisks
         {
             get
@@ -44,17 +72,22 @@ namespace Services.BusinessLogic
             }
         }
 
-        //Add risks for insured objects
+        /// <summary>
+        /// Add risks for insured objects
+        /// </summary>
+        /// <param name="nameOfInsuredObject"></param>
+        /// <param name="risk"></param>
+        /// <param name="validFrom"></param>
         public void AddRisk(string nameOfInsuredObject, Risk risk, DateTime validFrom)
         {
             var policy = _policyRepository.Get().Result.Where(x => x.NameOfInsuredObject == nameOfInsuredObject).First();
 
-            risk.RiskFrom = validFrom;
-            risk.RiskTill = policy.ValidTill;
+            //risk.RiskFrom = validFrom;
+            //risk.RiskTill = policy.ValidTill;
 
             if(validFrom > DateTime.Now)
             {
-                risk.IsActive = false;
+                //risk.IsActive = false;
             }
 
             policy.InsuredRisks.Add(risk);
@@ -64,7 +97,12 @@ namespace Services.BusinessLogic
             _policyRepository.Update(policy.Id, policy);
         }
 
-        //Get the state of policy for the date
+        /// <summary>
+        /// Get the state of policy for the date
+        /// </summary>
+        /// <param name="nameOfInsuredObject"></param>
+        /// <param name="effectiveDate"></param>
+        /// <returns>Get policy's information at a given time</returns>
         public IPolicy GetPolicy(string nameOfInsuredObject, DateTime effectiveDate)
         {
             //we believe we have unique names of insured objects
@@ -92,14 +130,19 @@ namespace Services.BusinessLogic
             return policy_to_get;
         }
 
-        //Remove risks for insured objects
+        /// <summary>
+        /// Remove risks for insured objects
+        /// </summary>
+        /// <param name="nameOfInsuredObject"></param>
+        /// <param name="risk"></param>
+        /// <param name="validTill"></param>
         public void RemoveRisk(string nameOfInsuredObject, Risk risk, DateTime validTill)
         {
             var policy = _policyRepository.Get().Result.Where(x => x.NameOfInsuredObject == nameOfInsuredObject).First();
 
             List<Risk> _list_to_remove = new List<Risk>();
             _list_to_remove = (List<Risk>) policy.InsuredRisks;
-            _list_to_remove.RemoveAll(x => x.Id == risk.Id);
+            _list_to_remove.RemoveAll(x => x.Name == risk.Name);
             policy.InsuredRisks = _list_to_remove;
                 
             policy.Premium = CalcPolicyPremium(policy.InsuredRisks);
@@ -107,26 +150,37 @@ namespace Services.BusinessLogic
             _policyRepository.Update(policy.Id, policy);
         }
 
-        //calc method for overall policy's premium
+        /// <summary>
+        /// Calc method for overall policy's premium
+        /// </summary>
+        /// <param name="listrisk"></param>
+        /// <returns>Total price for policy within policy's period</returns>
         public decimal CalcPolicyPremium(IList<Risk> listrisk)
         {
             decimal total_price = 0;
 
             foreach (var item in listrisk)
             {
-                if (item.IsActive)
-                {
-                    var days_in_risk = (int) (item.RiskTill - item.RiskFrom).TotalDays; // all days in policy
-                    var daily_price = item.YearlyPrice / 365; // price per day
-                    var realprice = days_in_risk * daily_price;
-                    total_price += realprice;
-                }
+                //if (item.IsActive)
+                //{
+                //    var days_in_risk = (int) (item.RiskTill - item.RiskFrom).TotalDays; // all days in policy
+                //    var daily_price = item.YearlyPrice / 365; // price per day
+                //    var realprice = days_in_risk * daily_price;
+                //    total_price += realprice;
+                //}
             }
 
             return total_price;
         }
 
-        //Return and create policy in DB with initial (examples) list of risks
+        /// <summary>
+        /// Return and create policy in DB with initial (examples) list of risks
+        /// </summary>
+        /// <param name="nameOfInsuredObject"></param>
+        /// <param name="validFrom"></param>
+        /// <param name="validMonths"></param>
+        /// <param name="selectedRisks"></param>
+        /// <returns>Policy's information</returns>
         public IPolicy SellPolicy(string nameOfInsuredObject, DateTime validFrom, short validMonths, IList<Risk> selectedRisks)
         {
             var validTill = validFrom.AddMonths(validMonths);

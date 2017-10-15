@@ -15,6 +15,8 @@ using Services.BusinessLogic;
 using MongoDB.Bson.Serialization;
 using Utility;
 using DataAccess.Models;
+using MongoDB.Driver;
+using MongoDB.Bson.Serialization.IdGenerators;
 
 namespace MongoDBApp
 {
@@ -28,7 +30,26 @@ namespace MongoDBApp
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
-            BsonSerializer.RegisterSerializer(typeof(double), new BasicStructSerializer<Risk>());
+
+           
+
+            //BsonClassMap.RegisterClassMap<Risk>(cm =>
+            //{
+
+            //    cm.MapIdProperty(e => e.Name);
+            //    cm.MapProperty(e => e.IsActive).SetElementName("IsActive");
+            //    cm.MapProperty(e => e.RiskFrom).SetElementName("RiskFrom");
+            //    cm.MapProperty(e => e.RiskTill).SetElementName("RiskTill");
+            //    cm.MapProperty(e => e.YearlyPrice).SetElementName("YearlyPrice");
+            //    cm.MapProperty(e => e.Name).SetElementName("Name");
+            //    //cm.AutoMap();
+            //    //cm.SetIdMember(cm.GetMemberMap(c => c.Name).SetSerializer(new BasicStructSerializer<Risk>()));
+
+            //    //cm.GetMemberMap<Risk>(c => c.Name).SetSerializer(new BasicStructSerializer<Risk>());
+            //});
+
+            BsonSerializer.RegisterSerializer(typeof(Risk), new BasicStructSerializer<Risk>());
+            BsonSerializer.RegisterIdGenerator(typeof(Guid), GuidGenerator.Instance);
         }
 
         public IConfigurationRoot Configuration { get; }

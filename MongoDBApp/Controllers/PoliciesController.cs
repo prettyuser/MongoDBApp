@@ -20,7 +20,10 @@ namespace MongoDBApp.Controllers
             _policyService = policyService;
         }
 
-        //get all policies
+        /// <summary>
+        /// Get all policies
+        /// </summary>
+        /// <returns>All policies</returns>
         [HttpGet]
         [ActionName("GetPolicies")]
         public Task<string> Get()
@@ -30,13 +33,20 @@ namespace MongoDBApp.Controllers
         
         private async Task<string> GetPolicy()
         {
-            var policies = await _policyService.Get();
-            return JsonConvert.SerializeObject(policies);
+            var policies = await _policyService
+                                .Get();
+
+            return JsonConvert
+                .SerializeObject(policies);
         }
 
-        //get one policy by its id
+        /// <summary>
+        /// Get one policy by its id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>One policy by id</returns>
         [HttpGet("{id}")]
-        [ActionName("GetPolicyById")]
+        [ActionName("GetPolicyByName")]
         public Task<string> Get(string id)
         {
             return this.GetPolicyById(id);
@@ -44,37 +54,59 @@ namespace MongoDBApp.Controllers
 
         private async Task<string> GetPolicyById(string id)
         {
-            var policy = await _policyService.Get(id) ?? new Policy();
-            return JsonConvert.SerializeObject(policy);
+            var policy = await _policyService
+                .Get(id) ?? new Policy();
+
+            return JsonConvert
+                .SerializeObject(policy);
         }
 
-        //create policy
+        /// <summary>
+        /// Create policy
+        /// </summary>
+        /// <param name="policy"></param>
+        /// <returns>Null</returns>
         [HttpPost]
         [ActionName("CreatePolicy")]
         public async Task<string> Post([FromBody] Policy policy)
         {
-            await _policyService.Add(policy);
+            await _policyService
+                .Add(policy);
+
             return "";
         }
 
-        //modify policy
+        /// <summary>
+        /// Modify policy
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="policy"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         [ActionName("ModifyPolicy")]
         public async Task<string> Put(string id, [FromBody] Policy policy)
         {
-            if (string.IsNullOrEmpty(id)) return "Invalid id";
-            return await _policyService.Update(id, policy);            
+            if (string.IsNullOrEmpty(id))
+                return "Invalid id";
+
+            return await _policyService
+                .Update(id, policy);            
         }
 
-        //delete policy
+        /// <summary>
+        /// Delete policy
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
-        [ActionName("DeletePolicyById")]
+        [ActionName("DeletePolicyByName")]
         public async Task<string> Delete(string id)
         {
             if (string.IsNullOrEmpty(id))
                 return "Invalid id";
 
             await _policyService.Remove(id);
+
             return "";
         }
     }
