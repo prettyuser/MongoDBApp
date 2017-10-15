@@ -36,29 +36,19 @@ namespace MongoDBApp.Controllers
             return JsonConvert
                 .SerializeObject(risks);
         }
-
-        /// <summary>
-        /// Change the company's name
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        //[HttpPost]
-        //[ActionName("AvailableRisks")]
-        //public string ChangeNameCompany(string name)
-        //{
-        //    _insuranceCompany.ChangeCompanyName(name);
-        //    return _insuranceCompany.Name;
-        //}
-
-
         
+        /// <summary>
+        /// Get the state of policy at the moment 
+        /// </summary>
+        /// <param name="policy"></param>
+        /// <returns></returns>
         [HttpPost]
         [ActionName("PolicyState")]
         public string GetPolicyState([FromBody] Policy policy)
         {
             var riskState = _insuranceCompany
                 .GetPolicy(policy.NameOfInsuredObject, 
-                            DateTime.Now);
+                            DateTime.Now.AddMonths(5));
 
             return JsonConvert
                 .SerializeObject(riskState);
@@ -85,16 +75,15 @@ namespace MongoDBApp.Controllers
         /// </summary>
         /// <param name="policy"></param>
         /// <returns></returns>
+        /// /// !!! Не забыть убрать хрень с Моком (3355)
         [HttpPost]
         [ActionName("AddRiskPolicy")]
         public string PostAddRiskPolicy([FromBody] Policy policy)
         {
             _insuranceCompany
                 .AddRisk(policy.NameOfInsuredObject, 
-                        _insuranceCompany
-                            .AvailableRisks
-                            .First(x => x.YearlyPrice == 3355), 
-                        DateTime.Now);
+                        new Risk {Name = "Stolen Wheels", YearlyPrice = 700 }, 
+                        DateTime.Now.AddMonths(4));
 
             return "";
         }
@@ -104,16 +93,15 @@ namespace MongoDBApp.Controllers
         /// </summary>
         /// <param name="policy"></param>
         /// <returns></returns>
+        /// !!! Не забыть убрать хрень с Моком (3355)
         [HttpPost]
         [ActionName("DeleteRiskPolicy")]
         public string PostDeleteRiskPolicy([FromBody] Policy policy)
         {
             _insuranceCompany
                 .RemoveRisk(policy.NameOfInsuredObject, 
-                            _insuranceCompany
-                                .AvailableRisks
-                                .First(x => x.YearlyPrice == 3355), 
-                            DateTime.Now);
+                            new Risk {Name = "Stolen Cat", YearlyPrice = 3355 }, 
+                            DateTime.Now.AddMonths(3));
 
             return "";
         }

@@ -21,7 +21,7 @@ namespace Services.BusinessLogic
 
         public async Task Add(Risk risk)
         {
-            risk.Name = risk.Name;
+            //risk.Name = risk.Name;
 
             await _riskRepository
                 .Add(risk)

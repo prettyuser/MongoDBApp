@@ -80,21 +80,21 @@ namespace Services.BusinessLogic
         /// <param name="validFrom"></param>
         public void AddRisk(string nameOfInsuredObject, Risk risk, DateTime validFrom)
         {
-            var policy = _policyRepository.Get().Result.Where(x => x.NameOfInsuredObject == nameOfInsuredObject).First();
+            var _policy = _policyRepository.Get().Result.Where(x => x.NameOfInsuredObject == nameOfInsuredObject).First();
 
-            //risk.RiskFrom = validFrom;
-            //risk.RiskTill = policy.ValidTill;
+            _policy.InsuredRisks.Add(risk);
 
-            if(validFrom > DateTime.Now)
+            _policy.AttachedRisks.Add(risk.Name, new ActiveState
             {
-                //risk.IsActive = false;
-            }
+                IsActive = DateTime.Now >= validFrom && DateTime.Now <= _policy.ValidTill,
+                RiskFrom = validFrom,
+                RiskTill = _policy.ValidTill,
+                YearlyPrice = risk.YearlyPrice
+            });
 
-            policy.InsuredRisks.Add(risk);
+            _policy.Premium = CalculationPolicies.CalcPolicyPremium(_policy.AttachedRisks);
 
-            policy.Premium = CalcPolicyPremium(policy.InsuredRisks);
-
-            _policyRepository.Update(policy.Id, policy);
+            _policyRepository.Update(_policy.NameOfInsuredObject, _policy);
         }
 
         /// <summary>
@@ -105,72 +105,42 @@ namespace Services.BusinessLogic
         /// <returns>Get policy's information at a given time</returns>
         public IPolicy GetPolicy(string nameOfInsuredObject, DateTime effectiveDate)
         {
-            //we believe we have unique names of insured objects
             var policy = _policyRepository.Get().Result.Where(x => x.NameOfInsuredObject == nameOfInsuredObject).First();
 
             var policy_to_get = new Policy();
 
-            //clone the instance for working with its copy
-            Mapper.Initialize(cfg => cfg.CreateMap<Policy, Policy>());
             policy_to_get = Mapper.Map<Policy>(policy);
 
             //setting flags 'IsActive'
-            //foreach(var item in policy_to_get.InsuredRisks) 
-            //{
-            //    if (effectiveDate >= item.RiskFrom && effectiveDate <= item.RiskTill)
-            //        item.IsActive = true;
-            //    else
-            //        item.IsActive = false;
-            //}
-            
-            //calc the premium at the moment
-            policy_to_get.Premium = CalcPolicyPremium(policy_to_get.InsuredRisks);
-
+            foreach (var item in policy_to_get.AttachedRisks)
+            {
+                if (effectiveDate >= item.Value.RiskFrom && effectiveDate <= item.Value.RiskTill)
+                    item.Value.IsActive = true;
+                else
+                    item.Value.IsActive = false;
+            }
 
             return policy_to_get;
         }
 
         /// <summary>
-        /// Remove risks for insured objects
+        /// Remove risks for insured objects means put a date of risk's end
         /// </summary>
         /// <param name="nameOfInsuredObject"></param>
         /// <param name="risk"></param>
         /// <param name="validTill"></param>
         public void RemoveRisk(string nameOfInsuredObject, Risk risk, DateTime validTill)
         {
-            var policy = _policyRepository.Get().Result.Where(x => x.NameOfInsuredObject == nameOfInsuredObject).First();
+            var _policy = _policyRepository.Get().Result.Where(x => x.NameOfInsuredObject == nameOfInsuredObject).First();
 
-            List<Risk> _list_to_remove = new List<Risk>();
-            _list_to_remove = (List<Risk>) policy.InsuredRisks;
-            _list_to_remove.RemoveAll(x => x.Name == risk.Name);
-            policy.InsuredRisks = _list_to_remove;
+            _policy.AttachedRisks[risk.Name].RiskTill = validTill;
                 
-            policy.Premium = CalcPolicyPremium(policy.InsuredRisks);
+            _policy.Premium = CalculationPolicies.CalcPolicyPremium(_policy.AttachedRisks);
 
-            _policyRepository.Update(policy.Id, policy);
-        }
+            _policy.AttachedRisks[risk.Name].IsActive = 
+                DateTime.Now >= _policy.AttachedRisks[risk.Name].RiskFrom && DateTime.Now <= validTill;
 
-        /// <summary>
-        /// Calc method for overall policy's premium
-        /// </summary>
-        /// <param name="listrisk"></param>
-        /// <returns>Total price for policy within policy's period</returns>
-        public decimal CalcPolicyPremium(IList<Risk> listrisk)
-        {
-            decimal total_price = 0;
-
-            foreach (var item in listrisk)
-            {
-                //if (item.IsActive)
-                //{
-                //    var days_in_risk = (int) (item.RiskTill - item.RiskFrom).TotalDays; // all days in policy
-                //    var daily_price = item.YearlyPrice / 365; // price per day
-                //    var realprice = days_in_risk * daily_price;
-                //    total_price += realprice;
-                //}
-            }
-
-            return total_price;
+            _policyRepository.Update(_policy.NameOfInsuredObject, _policy);
         }
 
         /// <summary>
@@ -186,24 +156,42 @@ namespace Services.BusinessLogic
             var validTill = validFrom.AddMonths(validMonths);
             decimal total_price = 0;
 
+            //Mocks
             if (selectedRisks == null)
             {
                 selectedRisks = new List<Risk>
                 {
-                    _riskRepository.Get("59d7862f40860722a8cd9698").Result,
-                    _riskRepository.Get("59d8a6a3b830e6266cf1738b").Result
+                    _riskRepository.Get("Stolen Cat").Result,
+                    _riskRepository.Get("Headache").Result
                 };
             }
 
-            //foreach (var item in selectedRisks)
-            //{
-            //    item.RiskFrom = validFrom;
-            //    item.RiskTill = validTill;
-            //}
+            Policy _policy = new Policy { NameOfInsuredObject = nameOfInsuredObject,
+                                          AttachedRisks = null,
+                                          ValidFrom = validFrom,
+                                          ValidTill = validTill,
+                                          Premium = 0,
+                                          ValidMonths = validMonths,
+                                          InsuredRisks = selectedRisks
+                                        };
 
-            total_price = CalcPolicyPremium(selectedRisks);
+            _policy.AttachedRisks = new Dictionary<string, ActiveState>(selectedRisks.Count);
 
-            Policy _policy = new Policy { NameOfInsuredObject = nameOfInsuredObject, InsuredRisks = selectedRisks, ValidFrom = validFrom, ValidTill = validFrom.AddMonths(validMonths), Premium = total_price, ValidMonths = validMonths };
+            foreach (var item in selectedRisks)
+            {
+                _policy.AttachedRisks.Add(item.Name, new ActiveState()
+                {
+                    IsActive = DateTime.Now >= validFrom && DateTime.Now <= validTill,
+                    RiskFrom = validFrom,
+                    RiskTill = validTill,
+                    YearlyPrice = item.YearlyPrice
+                });
+            }
+
+            total_price = CalculationPolicies.CalcPolicyPremium(_policy.AttachedRisks);
+
+            _policy.Premium = total_price;
+            _policy.InsuredRisks = selectedRisks;
 
             _policyRepository.Add(_policy);
 
