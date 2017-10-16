@@ -17,7 +17,7 @@ namespace DataAccess.Models
 
         [Required(ErrorMessage = "Required field")]
         [DisplayFormat(DataFormatString = "{0:C0}")]
-        [Range(1, 1000000, ErrorMessage = "Value must be between 1 and 10 000 000 USD")]
+        [Range(1, 1000000, ErrorMessage = "Value must be between 1 and 1 000 000 USD")]
         public decimal YearlyPrice { get; set; }
     }
 }

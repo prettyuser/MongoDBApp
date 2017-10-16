@@ -1,15 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MongoDBApp", "MongoDBApp\MongoDBApp.csproj", "{075DFA70-2EE2-4E7B-860C-D90918FC0EA1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MongoDBApp", "MongoDBApp\MongoDBApp.csproj", "{075DFA70-2EE2-4E7B-860C-D90918FC0EA1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{0987D1A8-A0A3-4B08-A95F-4F79DBD5A70B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\DataAccess.csproj", "{0987D1A8-A0A3-4B08-A95F-4F79DBD5A70B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Services.csproj", "{7DA9F720-5563-436D-8DC0-749F2B585FDF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Services\Services.csproj", "{7DA9F720-5563-436D-8DC0-749F2B585FDF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utility", "Utility\Utility.csproj", "{94CA3BD6-7E21-4BFF-9567-F67517DB33A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utility", "Utility\Utility.csproj", "{94CA3BD6-7E21-4BFF-9567-F67517DB33A2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services.Tests_", "Services.Tests_\Services.Tests_.csproj", "{74443F73-5A7F-4168-9DB6-B3C3E237AF3E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,8 +35,15 @@ Global
 		{94CA3BD6-7E21-4BFF-9567-F67517DB33A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{94CA3BD6-7E21-4BFF-9567-F67517DB33A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{94CA3BD6-7E21-4BFF-9567-F67517DB33A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74443F73-5A7F-4168-9DB6-B3C3E237AF3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74443F73-5A7F-4168-9DB6-B3C3E237AF3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74443F73-5A7F-4168-9DB6-B3C3E237AF3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74443F73-5A7F-4168-9DB6-B3C3E237AF3E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {45211DD1-1D63-40D5-9AD4-8157E65B7305}
 	EndGlobalSection
 EndGlobal
