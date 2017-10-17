@@ -81,21 +81,21 @@ namespace Services.BusinessLogic
         public void AddRisk(string nameOfInsuredObject, Risk risk, DateTime validFrom)
         {
             //var _policy = _policyRepository.Get().Result.Where(x => x.NameOfInsuredObject == nameOfInsuredObject).First();
-            var _policy = _policyRepository.Get(nameOfInsuredObject).Result;
+            var policy = _policyRepository.Get(nameOfInsuredObject).Result;
 
-            _policy.InsuredRisks.Add(risk);
+            policy.InsuredRisks.Add(risk);
 
-            _policy.AttachedRisks.Add(risk.Name, new ActiveState
+            policy.AttachedRisks.Add(risk.Name, new ActiveState
             {
-                IsActive = DateTime.Now >= validFrom && DateTime.Now <= _policy.ValidTill,
+                IsActive = DateTime.Now >= validFrom && DateTime.Now <= policy.ValidTill,
                 RiskFrom = validFrom,
-                RiskTill = _policy.ValidTill,
+                RiskTill = policy.ValidTill,
                 YearlyPrice = risk.YearlyPrice
             });
 
-            _policy.Premium = CalculationPolicies.CalcPolicyPremium(_policy.AttachedRisks);
+            policy.Premium = CalculationPolicies.CalcPolicyPremium(policy.AttachedRisks);
 
-            _policyRepository.Update(_policy.NameOfInsuredObject, _policy);
+            _policyRepository.Update(policy.NameOfInsuredObject, policy);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Services.BusinessLogic
         /// <returns>Get policy's information at a given time</returns>
         public IPolicy GetPolicy(string nameOfInsuredObject, DateTime effectiveDate)
         {
-            var policy = _policyRepository.Get().Result.Where(x => x.NameOfInsuredObject == nameOfInsuredObject).First();
+            var policy = _policyRepository.Get(nameOfInsuredObject).Result;
 
             var policy_to_get = new Policy();
 
@@ -132,7 +132,7 @@ namespace Services.BusinessLogic
         /// <param name="validTill"></param>
         public void RemoveRisk(string nameOfInsuredObject, Risk risk, DateTime validTill)
         {
-            var _policy = _policyRepository.Get().Result.Where(x => x.NameOfInsuredObject == nameOfInsuredObject).First();
+            var _policy = _policyRepository.Get(nameOfInsuredObject).Result;
 
             _policy.AttachedRisks[risk.Name].RiskTill = validTill;
                 

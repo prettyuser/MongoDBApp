@@ -4,7 +4,6 @@ using DataAccess.Repository.Stubs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Services.BusinessLogic;
-using Services.BusinessLogic.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
