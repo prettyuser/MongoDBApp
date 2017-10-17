@@ -80,7 +80,8 @@ namespace Services.BusinessLogic
         /// <param name="validFrom"></param>
         public void AddRisk(string nameOfInsuredObject, Risk risk, DateTime validFrom)
         {
-            var _policy = _policyRepository.Get().Result.Where(x => x.NameOfInsuredObject == nameOfInsuredObject).First();
+            //var _policy = _policyRepository.Get().Result.Where(x => x.NameOfInsuredObject == nameOfInsuredObject).First();
+            var _policy = _policyRepository.Get(nameOfInsuredObject).Result;
 
             _policy.InsuredRisks.Add(risk);
 
@@ -155,16 +156,6 @@ namespace Services.BusinessLogic
         {
             var validTill = validFrom.AddMonths(validMonths);
             decimal totalPrice = 0;
-
-            //Mocks
-            //if (selectedRisks == null)
-            //{
-            //    selectedRisks = new List<Risk>
-            //    {
-            //        _riskRepository.Get("Stolen Cat").Result,
-            //        _riskRepository.Get("Headache").Result
-            //    };
-            //}
 
             Policy policy = new Policy { NameOfInsuredObject = nameOfInsuredObject,
                                           AttachedRisks = null,
