@@ -154,32 +154,32 @@ namespace Services.BusinessLogic
         public IPolicy SellPolicy(string nameOfInsuredObject, DateTime validFrom, short validMonths, IList<Risk> selectedRisks)
         {
             var validTill = validFrom.AddMonths(validMonths);
-            decimal total_price = 0;
+            decimal totalPrice = 0;
 
             //Mocks
-            if (selectedRisks == null)
-            {
-                selectedRisks = new List<Risk>
-                {
-                    _riskRepository.Get("Stolen Cat").Result,
-                    _riskRepository.Get("Headache").Result
-                };
-            }
+            //if (selectedRisks == null)
+            //{
+            //    selectedRisks = new List<Risk>
+            //    {
+            //        _riskRepository.Get("Stolen Cat").Result,
+            //        _riskRepository.Get("Headache").Result
+            //    };
+            //}
 
-            Policy _policy = new Policy { NameOfInsuredObject = nameOfInsuredObject,
+            Policy policy = new Policy { NameOfInsuredObject = nameOfInsuredObject,
                                           AttachedRisks = null,
                                           ValidFrom = validFrom,
                                           ValidTill = validTill,
                                           Premium = 0,
                                           ValidMonths = validMonths,
-                                          InsuredRisks = selectedRisks
+                                          InsuredRisks = null
                                         };
 
-            _policy.AttachedRisks = new Dictionary<string, ActiveState>(selectedRisks.Count);
+            policy.AttachedRisks = new Dictionary<string, ActiveState>(selectedRisks.Count);
 
             foreach (var item in selectedRisks)
             {
-                _policy.AttachedRisks.Add(item.Name, new ActiveState()
+                policy.AttachedRisks.Add(item.Name, new ActiveState()
                 {
                     IsActive = DateTime.Now >= validFrom && DateTime.Now <= validTill,
                     RiskFrom = validFrom,
@@ -188,14 +188,14 @@ namespace Services.BusinessLogic
                 });
             }
 
-            total_price = CalculationPolicies.CalcPolicyPremium(_policy.AttachedRisks);
+            totalPrice = CalculationPolicies.CalcPolicyPremium(policy.AttachedRisks);
 
-            _policy.Premium = total_price;
-            _policy.InsuredRisks = selectedRisks;
+            policy.Premium = totalPrice;
+            policy.InsuredRisks = selectedRisks;
 
-            _policyRepository.Add(_policy);
+            _policyRepository.Add(policy);
 
-            return _policy;
+            return policy;
         }
         #endregion
     }

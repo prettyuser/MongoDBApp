@@ -16,6 +16,7 @@ namespace DataAccess.Repository.Stubs
             throw new NotImplementedException();
         }
 
+        //implemented
         public async Task<IEnumerable<Risk>> Get()
         {
             IEnumerable<Risk> _list = new List<Risk>
@@ -35,12 +36,13 @@ namespace DataAccess.Repository.Stubs
                 new Risk{Name = "Risk M", YearlyPrice = 3499}
             };
 
-            return await (Task<IEnumerable<Risk>>)_list;
+            return await Task.Run(() => _list);
         }
 
+        //implemented
         public Task<Risk> Get(string id)
         {
-            throw new NotImplementedException();
+            return Task.Run(() => new Risk { Name = "Risk XYZ", YearlyPrice = 1111 });
         }
 
         public Task<DeleteResult> Remove(string id)
