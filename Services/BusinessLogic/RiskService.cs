@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using DataAccess.Models;
 using MongoDB.Driver;
 using DataAccess.Repository.Base;
+using System;
 
 namespace Services.BusinessLogic
 {
@@ -35,6 +36,11 @@ namespace Services.BusinessLogic
 
         public async Task<Risk> Get(string id)
         {
+            if(id == null)
+            {
+                throw new ArgumentNullException("ID equals NULL");
+            }
+
             return await _riskRepository
                 .Get(id)
                 .ConfigureAwait(false);
@@ -42,6 +48,11 @@ namespace Services.BusinessLogic
 
         public async Task<DeleteResult> Remove(string id)
         {
+            if (id == null)
+            {
+                throw new ArgumentNullException("ID equals NULL");
+            }
+
             return await _riskRepository
                 .Remove(id)
                 .ConfigureAwait(false);
@@ -56,6 +67,11 @@ namespace Services.BusinessLogic
 
         public async Task<string> Update(string id, Risk risk)
         {
+            if (id == null)
+            {
+                throw new ArgumentNullException("ID equals NULL");
+            }
+
             return await _riskRepository
                 .Update(id, risk)
                 .ConfigureAwait(false);

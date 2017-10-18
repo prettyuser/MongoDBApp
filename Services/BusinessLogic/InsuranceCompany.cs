@@ -80,10 +80,29 @@ namespace Services.BusinessLogic
         /// <param name="validFrom"></param>
         public void AddRisk(string nameOfInsuredObject, Risk risk, DateTime validFrom)
         {
-            //var _policy = _policyRepository.Get().Result.Where(x => x.NameOfInsuredObject == nameOfInsuredObject).First();
+            if (nameOfInsuredObject == null)
+            {
+                throw new ArgumentNullException("Argument nameOfInsuredObject not defined!");
+            }
+
+            if (_policyRepository.Get(nameOfInsuredObject).Result == null)
+            {
+                throw new NullReferenceException($"There is no object with name \"{nameOfInsuredObject}\" in policy");
+            }
+
             var policy = _policyRepository.Get(nameOfInsuredObject).Result;
 
+            if (policy.InsuredRisks.Contains(risk))
+            {
+                throw new DuplicateRiskException($"Duplicate Risk \"{risk}\"");
+            }
+
             policy.InsuredRisks.Add(risk);
+
+            if(validFrom >= policy.ValidTill)
+            {
+                throw new BadDateException("validFrom must be l.t. validTill");
+            }
 
             policy.AttachedRisks.Add(risk.Name, new ActiveState
             {
@@ -106,6 +125,16 @@ namespace Services.BusinessLogic
         /// <returns>Get policy's information at a given time</returns>
         public IPolicy GetPolicy(string nameOfInsuredObject, DateTime effectiveDate)
         {
+            if (nameOfInsuredObject == null)
+            {
+                throw new ArgumentNullException("Argument nameOfInsuredObject not defined!");
+            }
+
+            if (_policyRepository.Get(nameOfInsuredObject).Result == null)
+            {
+                throw new NullReferenceException($"There is no object with name \"{nameOfInsuredObject}\" in policy");
+            }
+
             var policy = _policyRepository.Get(nameOfInsuredObject).Result;
 
             var policy_to_get = new Policy();
@@ -132,16 +161,31 @@ namespace Services.BusinessLogic
         /// <param name="validTill"></param>
         public void RemoveRisk(string nameOfInsuredObject, Risk risk, DateTime validTill)
         {
-            var _policy = _policyRepository.Get(nameOfInsuredObject).Result;
+            if (nameOfInsuredObject == null)
+            {
+                throw new ArgumentNullException("Argument nameOfInsuredObject not defined!");
+            }
 
-            _policy.AttachedRisks[risk.Name].RiskTill = validTill;
+            if (_policyRepository.Get(nameOfInsuredObject).Result == null)
+            {
+                throw new NullReferenceException($"There is no object with name \"{nameOfInsuredObject}\" in policy");
+            }
+
+            var policy = _policyRepository.Get(nameOfInsuredObject).Result;
+
+            if (validTill <= policy.ValidFrom)
+            {
+                throw new BadDateException("validTill must be g.t. validFrom");
+            }
+
+            policy.AttachedRisks[risk.Name].RiskTill = validTill;
                 
-            _policy.Premium = CalculationPolicies.CalcPolicyPremium(_policy.AttachedRisks);
+            policy.Premium = CalculationPolicies.CalcPolicyPremium(policy.AttachedRisks);
 
-            _policy.AttachedRisks[risk.Name].IsActive = 
-                DateTime.Now >= _policy.AttachedRisks[risk.Name].RiskFrom && DateTime.Now <= validTill;
+            policy.AttachedRisks[risk.Name].IsActive = 
+                DateTime.Now >= policy.AttachedRisks[risk.Name].RiskFrom && DateTime.Now <= validTill;
 
-            _policyRepository.Update(_policy.NameOfInsuredObject, _policy);
+            _policyRepository.Update(policy.NameOfInsuredObject, policy);
         }
 
         /// <summary>
@@ -154,6 +198,25 @@ namespace Services.BusinessLogic
         /// <returns>Policy's information</returns>
         public IPolicy SellPolicy(string nameOfInsuredObject, DateTime validFrom, short validMonths, IList<Risk> selectedRisks)
         {
+            if (selectedRisks == null)
+            {
+                throw new ArgumentNullException("Argument selectedRisks must contain at least one risk");
+            }
+            if (nameOfInsuredObject == null)
+            {
+                throw new ArgumentNullException("Argument nameOfInsuredObject not defined!");
+            }
+
+            if (_policyRepository.Get(nameOfInsuredObject).Result == null)
+            {
+                throw new NullReferenceException($"There is no object with name \"{nameOfInsuredObject}\" in policy");
+            }
+
+            if(validMonths <= 0)
+            {
+                throw new BadDateException("validMonths must be g.t. 0(zero)");
+            }
+
             var validTill = validFrom.AddMonths(validMonths);
             decimal totalPrice = 0;
 
